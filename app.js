@@ -104,6 +104,17 @@ var financeController = (function () {
     this.id = id;
     this.description = description;
     this.value = value;
+    this.percentage = -1;
+  };
+
+  Expense.prototype.calcPercentage = function (totalIncome) {
+    if (totalIncome > 0)
+      this.percentage = Math.round((this.value / totalIncome) * 100);
+    else this.percentage = 0;
+  };
+
+  Expense.prototype.getPercentage = function () {
+    return this.percentage;
   };
 
   var calculateTotal = function (type) {
@@ -139,7 +150,9 @@ var financeController = (function () {
       //Төсвийг шинээр тооцоолно
       data.tusuv = data.totals.inc - data.totals.exp;
       //Орлого, зарлагын хувийг тооцоолно
-      data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
+      if (data.totals.inc !== 0 && data.totals.exp !== 0)
+        data.huvi = Math.round((data.totals.exp / data.totals.inc) * 100);
+      //Зарлагуудын эзлэх хувийг тооцоолох
     },
 
     tusviigAvah: function () {
@@ -200,15 +213,18 @@ var appController = (function (uiController, financeController) {
       uiController.addListItem(item, input.type);
       uiController.clearFields();
 
-      // 4. Төсвийг тооцоолно.
-      financeController.tusuvTootsooloh();
-
-      // 5. Эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргана.
-      var tusuv = financeController.tusviigAvah();
-
-      // 6. Төсвийн тооцоог дэлгэцэнд гаргана.
-      uiController.tusviigUzuuleh(tusuv);
+      updateTusuv();
     }
+  };
+  var updateTusuv = function () {
+    // 4. Төсвийг тооцоолно.
+    financeController.tusuvTootsooloh();
+
+    // 5. Эцсийн үлдэгдэл, тооцоог дэлгэцэнд гаргана.
+    var tusuv = financeController.tusviigAvah();
+
+    // 6. Төсвийн тооцоог дэлгэцэнд гаргана.
+    uiController.tusviigUzuuleh(tusuv);
   };
 
   var setupEventListeners = function () {
@@ -235,6 +251,7 @@ var appController = (function (uiController, financeController) {
           //2. Дэлгэц дээрээс энэ элементийг устгана.
           uiController.deleteListItem(id);
           //3. Үлдэгдэл тооцоог шинэчилж харуулна.
+          updateTusuv();
         }
       });
   };
