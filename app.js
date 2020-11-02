@@ -14,6 +14,7 @@ var uiController = (function () {
     percentageLabel: ".budget__expenses--percentage",
     containerDiv: ".container",
     expensePercentageLabel: ".item__percentage",
+    dateLabel: ".budget__title--month",
   };
 
   var nodeListForeach = function(list, callback){
@@ -22,7 +23,15 @@ var uiController = (function () {
     }
   };
 
+  var formatMoney = function(too){
+
+  };
+
   return {
+    displayDate: function(){
+      var unuudur=new Date();
+      document.querySelector(Domstrings.dateLabel).textContent=unuudur.getFullYear() + " ОНЫ " + (unuudur.getMonth()+1) + " САРЫН ";
+    },
     getInput: function () {
       return {
         type: document.querySelector(Domstrings.inputType).value,
@@ -302,6 +311,7 @@ var appController = (function (uiController, financeController) {
   return {
     init: function () {
       console.log("Application started...");
+      uiController.displayDate();
       uiController.tusviigUzuuleh({
         tusuv: 0,
         huvi: 0,
